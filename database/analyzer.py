@@ -62,7 +62,7 @@ def analyze_scenario(scenario_text: str) -> dict:
         return None
 
     # Initialize the Gemini model
-    model = genai.GenerativeModel('gemini-1.5-flash') # Using flash for speed and cost-efficiency
+    model = genai.GenerativeModel('gemini-2.5-flash') # Using flash for speed and cost-efficiency
     
     # Fill the user's scenario into the prompt template
     prompt = PROMPT_TEMPLATE.format(scenario_text=scenario_text)
