@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詐騙案例關鍵字搜尋</title>
+    <style>
+        /* Basic page styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        /* Search input styling */
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* Important for padding */
+            transition: border-color 0.3s;
+        }
+        #searchInput:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        /* Results area styling */
+        #resultsContainer {
+            margin-top: 20px;
+        }
+        .result-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 5px;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item h2 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        .result-item p {
+            margin: 5px 0;
+        }
+        .keywords {
+            font-size: 0.9em;
+            color: #555;
+        }
+        /* Highlight for matched text */
+        .highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>詐騙案例關鍵字搜尋</h1>
+        <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋，例如：LINE、投資、保證金...">
+        <div id="resultsContainer"></div>
+    </div>
+
+    <script>
+        // Paste the JSON data here
+        const scamData = {
+          "scams": [
+            {
+              "category": "網路購物詐騙",
+              "keywords": ["一頁式網站", "LINE私下交易", "假冒賣貨便", "實名制認證", "釣魚連結", "OTP驗證碼", "先匯款保留", "面交地點偏鄉", "商品與廣告不符"],
+              "tactics": ["珠寶買賣直播", "賭石直播", "緬甸戰爭大量便宜珠寶出售", "優惠價購買餐券", "便宜價二手車", "LV包包特賣會", "代購演唱會門票", "要求以LINE私下交易", "先匯款保留商品", "提供一頁式網站下單", "商品可面交，但都在偏鄉，或面交時間約不到，只好改成匯款後寄送", "提供多個不同帳戶供匯款", "匯款後即消失或封鎖", "寄出之商品與廣告不符且明顯低價", "先要求超商繳費，再以金流有問題等理由，要求匯款才能出貨及返還金額"],
+              "case_study": { "narrative": "上個月某天下班回家，我像往常一樣躺在沙發上滑Instagram，看到廣告推播有賣家在賣韓星【權志龍】的周邊商品，照片拍得又美又專業，價格還挺合理，心想機會難得，就直接私訊對方，對方的帳號是叫「雨欣」。\n她跟我說可以用 7-11 賣貨便交易，便貼了一個連結給我。結果我點進去下單時，畫面跳出「未完成實名制認證」的提示，還要我去聯繫線上客服。\n接著，我加了那個所謂的「7-Eleven賣貨便線上客服」，對方還很正式地說自己是客服副理，說現在為了防止詐騙，要求買家、賣家都要先驗證帳戶是本人，否則無法交易，由於我上次使用這個服務是好幾年前，不知道有這樣的改變。\n對方接著傳了一個7-11賣貨便的實名制網站連結，我點進去也十分正常，我完全沒有意識到自己正掉入陷阱，填完資料後，網站接著要我用信用卡認證，上頭寫著不會請款，我就很放心地輸入我信用卡卡號與OTP驗證碼。\n沒想到我接著就被刷了一筆新台幣18萬元的款項，我這才終於意識到不對勁，於是我上網查，才發現這是常見的詐騙手法!接著我馬上聯絡銀行客服和到派出所報案，希望能追回這筆款項。" }
+            },
+            {
+              "category": "假投資詐騙",
+              "keywords": ["LINE投資群組", "保證獲利", "飆股", "內線消息", "AI投資機器人", "虛擬貨幣", "假APP", "出金繳稅/保證金", "臨櫃匯款謊稱工程款", "養套殺"],
+              "tactics": ["免費領取投資秘笈", "投資書籍限時免費領取", "股票健檢、持股診斷", "ETF投資分享", "LINE投資群組股票分析、操盤教學", "內線消息當沖佈局，跟著大戶當沖獲利", "優先低價申購新股", "掌握股票抽籤系統漏洞必中籤", "AI投資機器人", "資金透過投資APP直接進入交易所，具有優先買賣權", "虛擬貨幣投資獲利計劃，投入越多獲利越多，獲利後需收取看似合理的服務費", "臨櫃匯款或轉帳不可備註原因", "叮囑臨櫃匯款須告知行員為工程款/房屋修繕裝潢款/借親友錢（因保密條款不可說為投資，外資會遭打壓/警方在查內線交易）", "由專員面交收取下單儲值金額，收取後由專員協助儲值進公司系統", "金管會通知出金需先繳納稅金", "為避免涉及洗錢。需繳納自證金", "交易量龐大，需先繳交擔保金給金管會審核撥款", "系統偵測交易風險，需繳納風險認證金"],
+              "case_study": { "narrative": "去年年底的時候，我透過朋友介紹，認識了1位叫【洪毓】的男子。他給人的第一印象超級好，文質彬彬有禮貌，穿著西裝鼻挺，開著歐洲車，看起來很有品味，談吐之間也有藏不住的自信，看起來就是那種事業成功、工作認真的形象。\n他主動跟我聊起說自己正在經營幾家醫美診所，還準備在車站附近開間補習班，某次電話中，他跟我說:「這些投資項目都穩穩的，利潤高，而且我資金也充足，只是希望找值得信任的朋友一起合作，給你插個乾股。」\n我一開始半信半疑，但又不想錯過投資機會，只先投了一點點資金試水溫。半年來，他每個月都準時把我該拿的分紅匯進來。過程中我們也多次見面討論，我當然更相信他，覺得他果然年輕、有實力又講信用。\n接下來幾個月，他陸續拋出更多看起來很吸引人的投資機會，我也因為前面幾次的甜頭，完全卸下心防，投入越來越多的資金。\n直到114年7月，我突然發現帳戶沒有再進帳，經我詢問，他卻開始推託，說什麼資金週轉問題、合作廠商出包、下個月就好……我越聽越不對勁，硬是追問到底，結果他索性不演了!\n他才說從頭到尾根本沒有什麼診所、補習班、投資計畫，我給他的錢全都被他拿去炒股、投入酒店經營，結果還被倒債，我真的氣到暈倒!" }
+            }
+            // ... The rest of your JSON data can be pasted here
+          ]
+        };
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const allScams = scamData.scams;
+
+        // Listen for user input in the search bar
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            
+            // Clear results if query is empty
+            if (query === '') {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            // Filter the data based on the query
+            const filteredScams = allScams.filter(scam => {
+                const categoryMatch = scam.category.toLowerCase().includes(query);
+                const keywordsMatch = scam.keywords.join(' ').toLowerCase().includes(query);
+                const tacticsMatch = scam.tactics.join(' ').toLowerCase().includes(query);
+                const narrativeMatch = scam.case_study.narrative.toLowerCase().includes(query);
+                
+                return categoryMatch || keywordsMatch || tacticsMatch || narrativeMatch;
+            });
+            
+            displayResults(filteredScams, query);
+        });
+
+        // Function to display the filtered results
+        function displayResults(results, query) {
+            // Clear previous results
+            resultsContainer.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p>找不到符合的結果。</p>';
+                return;
+            }
+
+            results.forEach(scam => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'result-item';
+
+                // Create the HTML content for each result item
+                // Use a regex to highlight all occurrences of the query
+                const highlightRegex = new RegExp(query, 'gi');
+                const highlightedCategory = scam.category.replace(highlightRegex, `<span class="highlight">${query}</span>`);
+                const highlightedKeywords = scam.keywords.join(', ').replace(highlightRegex, `<span class="highlight">${query}</span>`);
+                const highlightedNarrative = scam.case_study.narrative.replace(highlightRegex, `<span class="highlight">${query}</span>`);
+
+                itemDiv.innerHTML = `
+                    <h2>${highlightedCategory}</h2>
+                    <p class="keywords"><strong>關鍵字：</strong> ${highlightedKeywords}</p>
+                    <p>${highlightedNarrative.replace(/\n/g, '<br>')}</p>
+                `;
+                
+                resultsContainer.appendChild(itemDiv);
+            });
+        }
+    </script>
+</body>
+</html>
