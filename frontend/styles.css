@@ -1,0 +1,117 @@
+/* 版面與你原始風格一致，新增設定面板/按鈕樣式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    display: grid;
+    grid-template-rows: 50px 1fr 90px;
+    height: 100vh;
+  }
+  header {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #5d5d5d;
+    padding: 5px 10px;
+    font-size: small;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top:0; z-index: 10;
+  }
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:8px;
+    border:1px solid #e0e0e0; background:#fff; color:#5d5d5d; cursor:pointer;
+  }
+  .icon-btn:hover{ background:#f2f4f8; }
+  
+  .status{ padding:4px 8px; border-radius:999px; background:#e9eef6; color:#60708f; font-size:12px; margin-left:8px; }
+  .status.ok{ background:#d1f1e2; color:#1a7f53; }
+  
+  main{
+    width: 100%; display: flex; justify-content: center; align-items: stretch;
+  }
+  .chat-container {
+    width: 60%;
+    max-width: 800px;
+    height: calc(100vh - 50px - 90px);
+    border-radius: 8px;
+    margin-top: 10px;
+    display: flex; flex-direction: column;
+    overflow-y: auto; padding: 10px 0;
+  }
+  @media screen and (max-width: 900px) {
+    .chat-container { width: 90%; }
+  }
+  .composer{
+    background:#fff; border-top:1px solid #e6e6e6;
+    display:flex; gap:8px; align-items:center; justify-content:center; padding: 10px;
+  }
+  .composer textarea{
+    width: 60%; max-width: 800px; height: 70px; resize: vertical;
+    border-radius: 12px; border: 1px solid #ddd; padding: 10px 12px; outline: none;
+  }
+  
+  /* Chat bubbles */
+  .chat-box { 
+    width:100%; 
+    display:flex; 
+    justify-content:flex-start; 
+    align-items:start; 
+    padding:5px; 
+  }
+
+  .block-title{
+    font-weight:700;
+  }
+
+  .chat-box-text {
+    background-color: white; border-radius: 30px; min-height: 50px;
+    padding: 16px 25px; display:flex; flex-direction: column; align-items:start; justify-content:center; line-height:1.5;;
+  }
+  .chat-container img { width:50px; height:50px; object-fit:contain; padding-left:20px; padding-right:20px; }
+  .chatbox-spacer {
+    flex-grow: 1;       /* 佔據剩餘空間 */
+    flex-shrink: 1;     /* 空間不足時允許縮小 (預設即可) */
+    flex-basis: 0;      /* 初始大小為0，完全依 grow 撐開 */
+    min-width: 20%;
+  }
+  /* Steps */
+  .steps-box {
+    width: 100%; background-color: white; border-radius: 30px; min-height: 70px;
+    display:flex; align-items:center; gap:14px; padding: 10px 16px 10px 10px;
+  }
+  .step-number{ position: relative; display:flex; align-items:center; justify-content:center; }
+  .step-number .step { display:block; width:50px; height:50px; }
+  .step-number-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#000; font-size:16px; font-weight:bold; pointer-events:none; }
+  .steps-text{ padding-right:10px; }
+  
+  /* Horizontal list */
+  .hlist{ display:grid; grid-auto-flow:column; gap:12px; overflow-x:auto; padding:6px 6px 6px 0; }
+  .hcard{ min-width:220px; background:#fff; border:1px solid #e6e6e6; border-radius:12px; padding:12px; }
+  .hcard-title{ font-weight:700; color:#3a62c2; margin-bottom:6px; }
+  .hcard-content{ color:#333; }
+  
+  /* Buttons */
+  .btn{ display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:999px; border:1px solid #d9d9d9; background:#fff; cursor:pointer; }
+  .btn:hover{ background:#f5f7fb; }
+  .btn.primary{ background:#2c52aa; color:#fff; border-color:#2c52aa; }
+  .pill-buttons{ display:flex; flex-wrap:wrap; gap:8px; }
+  .btn.pill{ background:#fff; }
+  
+  /* Modal settings */
+  .modal{ position:fixed; inset:0; display:none; }
+  .modal.show{ display:block; }
+  .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+  .modal-card{
+    position:absolute; right:20px; top:60px; width: min(520px, calc(100% - 40px));
+    background:#fff; color:#333; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    border:1px solid #e6e6e6; padding: 14px;
+  }
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; }
+  .modal-body{ display:grid; gap:10px; }
+  .modal-body label{ display:grid; gap:6px; font-size:14px; color:#444; }
+  .modal-body input, .modal-body select, .modal-body textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid #d9d9d9; background:#fff; color:#333;
+  }
+  .modal-body textarea{ min-height: 140px; resize: vertical; }
+  .row{ display:flex; gap:8px; align-items:center; }
+  .muted{ color:#6b7280; font-size:12px; margin:0; }
+  

@@ -1,0 +1,65 @@
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scambino · JSON 對話助手</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h2>Scambino</h2>
+    <button id="settingsBtn" class="icon-btn" aria-label="設定">
+      <!-- gear icon (SVG) -->
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+        <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.03.03a2 2 0 1 1-2.83 2.83l-.03-.03A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 .32 1.8 1.8 0 0 0-.9 1.56V21a2 2 0 1 1-4 0v-.02a1.8 1.8 0 0 0-.9-1.56 1.8 1.8 0 0 0-1-.32 1.8 1.8 0 0 0-1.98.36l-.03.03a2 2 0 1 1-2.83-2.83l.03-.03A1.8 1.8 0 0 0 4.6 15c0-.37-.12-.73-.32-1.03A1.8 1.8 0 0 0 2.72 13H2.7a2 2 0 1 1 0-4h.02c.6 0 1.16-.29 1.56-.77.2-.3.32-.66.32-1.03a1.8 1.8 0 0 0-.36-1.98l-.03-.03A2 2 0 1 1 7.06 1.3l.03.03c.53.53 1.3.7 1.98.36.33-.17.6-.43.77-.76V1.9a2 2 0 1 1 4 0v.03c0 .6.29 1.16.77 1.56.3.2.66.32 1.03.32.37 0 .73-.12 1.03-.32l.03-.03A2 2 0 1 1 21.7 7.06l-.03.03a1.8 1.8 0 0 0-.36 1.98c.17.33.43.6.76.77H22.1a2 2 0 1 1 0 4h-.03c-.6 0-1.16.29-1.56.77-.2.3-.32.66-.32 1.03z"/>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <div class="chat-container" id="chat"></div>
+  </main>
+
+  <footer class="composer">
+    <textarea id="userInput" placeholder="輸入訊息（按按鈕送出；Enter 只換行）"></textarea>
+    <button id="sendBtn" class="btn primary">送出</button>
+    <button id="clearBtn" class="btn">清空</button>
+  </footer>
+
+  <!-- 設定面板（收合在齒輪內） -->
+  <div id="settingsModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-header">
+        <h3 id="settingsTitle">連線設定</h3>
+        <button id="closeSettings" class="icon-btn" aria-label="關閉">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>Gemini API Key
+          <input id="apiKey" type="password" placeholder="Google AI Studio API Key（僅測試用）" />
+        </label>
+        <label>模型
+          <select id="model">
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+          </select>
+        </label>
+        <details>
+          <summary>顯示系統提示詞（可編輯）</summary>
+          <textarea id="systemPrompt"></textarea>
+        </details>
+        <div class="row">
+          <button id="startBtn" class="btn primary">啟動對話</button>
+          <span id="status" class="status">未連線</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System prompt（預設填入、可在設定面板展開修改） -->
+  <textarea id="systemPromptSeed" style="display:none;"></textarea>
+
+  <script type="module" src="js.js"></script>
+</body>
+</html>
