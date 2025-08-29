@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Gmail HTML 傳送器 (注入式)",
+  "version": "3.0",
+  "description": "在 Gmail 介面中加入一個按鈕，用來傳送當前頁面的 HTML 到指定的 API。",
+  "permissions": [
+    "storage" 
+  ],
+  "host_permissions": [
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://mail.google.com/*"],
+      "css": ["style.css"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "images/scambino16.png",
+    "48": "images/scambino48.png",
+    "128": "images/scambino128.png"
+  }
+}
