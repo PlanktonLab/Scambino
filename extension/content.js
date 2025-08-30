@@ -1,6 +1,5 @@
 // Function to find the target and inject our button.
 function injectCustomButton() {
-  // **THIS IS THE ONLY LINE THAT CHANGED**
   // Use a stable attribute selector to find the "Print all" button.
   const printAllButton = document.querySelector('button[aria-label="全部列印"]');
   const customButtonId = 'scambino-send-html-btn';
@@ -10,40 +9,58 @@ function injectCustomButton() {
     
     const customButton = document.createElement('button');
     customButton.id = customButtonId;
-    customButton.innerText = '傳送 HTML';
-    // Apply some styles directly for better integration
-    customButton.style.marginLeft = '8px';
+    
+    // --- MODIFICATION START ---
+    // Set a title for accessibility (shows on hover).
+    customButton.title = '傳送內文 (包含真實連結)'; 
+    // Set the background image using the extension's URL.
+    customButton.style.backgroundImage = `url(${chrome.runtime.getURL('images/scambino48.png')})`;
+    // --- MODIFICATION END ---
 
     customButton.addEventListener('click', () => {
-      console.log("按鈕被點擊，準備獲取 HTML 並傳送訊息。");
-      customButton.textContent = '正在傳送...';
+      console.log("按鈕被點擊，準備獲取包含真實連結的純文字內容。");
       customButton.disabled = true;
 
-      const fullHtml = document.documentElement.outerHTML;
+      const mainContent = document.querySelector('div[role="main"]');
+      let emailText;
+
+      if (mainContent) {
+        // Clone the element to avoid modifying the actual page content.
+        const contentClone = mainContent.cloneNode(true);
+        const links = contentClone.querySelectorAll('a');
+        
+        links.forEach(link => {
+          const linkText = link.innerText.trim();
+          const linkHref = link.href;
+          if (linkText && linkHref) {
+            link.innerText = `${linkText} (${linkHref})`;
+          }
+        });
+        
+        emailText = contentClone.innerText;
+      } else {
+        emailText = '錯誤：找不到指定的信件內容 (div[role="main"])。';
+      }
+      
       const currentUrl = window.location.href;
 
-      // Send a message to the background script with the page's HTML.
+      // Send a message to the background script.
       chrome.runtime.sendMessage({
         action: "sendHtml",
-        html: fullHtml,
+        html: emailText,
         url: currentUrl
       }, (response) => {
-        // This callback runs after the background script responds.
         console.log(response.status);
-        alert('HTML 已成功傳送！'); // Simple feedback for the user.
+        alert('信件內容 (含真實連結) 已成功傳送！');
         
         // Restore button state
-        customButton.textContent = '傳送 HTML';
         customButton.disabled = false;
       });
     });
 
-    // Find the parent of the "Print all" button to insert our button.
     const buttonContainer = printAllButton.parentElement;
     if (buttonContainer) {
-        // Insert our button right after the "Print all" button.
         buttonContainer.insertBefore(customButton, printAllButton.nextSibling);
-        console.log('自訂按鈕已成功注入到「全部列印」旁邊！');
     }
   }
 }
@@ -55,9 +72,9 @@ const observer = new MutationObserver(() => {
 
 // Start observing the entire document body for changes.
 observer.observe(document.body, {
-  childList: true, // Watch for added/removed nodes
-  subtree: true    // Watch descendants of the target
+  childList: true,
+  subtree: true
 });
 
-// Also run it once on script load, in case the element is already there.
+// Also run it once on script load.
 injectCustomButton();

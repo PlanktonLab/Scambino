@@ -3,16 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body {
-      width: 220px;
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: none;
+      background-color: transparent;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    #container {
+      width: 300px;
+      padding: 16px 8px 16px 0px ;
+      display: flex;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-align: center;
-      padding: 10px;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
     }
+
+    #logoImg {
+      max-height: 46px;
+      margin: 6px 12px 6px 0px;
+    }
+
+    h2 {
+      color: #1D1D20;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .subButton {
+      background-color: #f6f8fa; /* Green */
+      border-radius: 16px;
+      border: none;
+      color: #1D1D20;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      margin-left: 8px;
+    }
+
+    .buttonMother {
+      display: flex;
+      gap: 8px;
+    }
+
     h3 {
       margin-top: 0;
+      margin-bottom: 12px;
     }
+
     button {
+      min-width: 80px;
       width: 90%;
       padding: 10px;
       border: 1px solid #ccc;
@@ -21,14 +71,30 @@
       cursor: pointer;
       font-size: 14px;
     }
+
     button:hover {
       background-color: #e0e0e0;
     }
   </style>
 </head>
 <body>
-  <h3>傳送頁面內容</h3>
-  <button id="sendHtmlBtn">傳送 HTML</button>
+  
+  <div id="container">
+    <img src="./images/scambino128.png" id="logoImg" />
+    <div class="content">
+      <h2>This is a safe website</h2>
+      <div class="buttonMother" >
+        <button class="subButton" id="sendHtmlBtn">
+          Report
+        </button>
+        <button class="subButton" id="helpButtton">
+          Get Help
+        </button>
+      </div>
+    </div>
+    
+  </div>
+
   <script src="api.js"></script>
   <script src="popup.js"></script>
 </body>
