@@ -47,7 +47,7 @@ function resetBotIconOnce() { _botIconShownThisTurn = false; }
 function botImgOnceTag() {
   if (_botIconShownThisTurn) {
     return '<img src="img/bot.png" alt="bot" class="bot" style="visibility:hidden;">';
-  } else {
+    } else {
     _botIconShownThisTurn = true;
     return '<img src="img/bot.png" alt="bot" class="bot">';
   }
@@ -66,6 +66,47 @@ function ensureAnimStyles() {
   document.head.appendChild(style);
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// ===== 設定面板：本地模型選項（自動注入 UI，不需要改 HTML） =====
+const LOCAL_MODEL_VALUE = "local-http";
+let localUrlInput = null; // 之後指向 #localUrl
+function ensureLocalOptionAndField() {
+  // 1) 在 #model select 內加入「本地（HTTP）」並預設選取
+  if (![...modelEl.options].some(o => o.value === LOCAL_MODEL_VALUE)) {
+    const opt = document.createElement("option");
+    opt.value = LOCAL_MODEL_VALUE;
+    opt.textContent = "本地（HTTP 端點）";
+    modelEl.insertBefore(opt, modelEl.firstChild);
+  }
+  modelEl.value = LOCAL_MODEL_VALUE; // 預設選擇本地
+
+  // 2) 在設定面板動態加入本地端點輸入框
+  const body = settingsModal.querySelector(".modal-body") || settingsModal;
+  if (!document.getElementById("localUrl")) {
+    const wrap = document.createElement("label");
+    wrap.id = "localUrlWrap";
+    wrap.innerHTML = `本地模型 URL
+      <input id="localUrl" type="text" placeholder="http://localhost:11434/v1/chat/completions 或 /api/chat" />`;
+    body.insertBefore(wrap, body.querySelector("details") || body.lastChild);
+  }
+  localUrlInput = document.getElementById("localUrl");
+  // 給一個常見預設（可自行改）
+  if (!localUrlInput.value) localUrlInput.value = "http://localhost:11434/v1/chat/completions";
+
+  updateProviderUI();
+}
+function updateProviderUI() {
+  const isLocal = modelEl.value === LOCAL_MODEL_VALUE;
+  const wrap = document.getElementById("localUrlWrap");
+  if (wrap) wrap.style.display = isLocal ? "block" : "none";
+  // 本地模式通常不需要 API Key
+  apiKeyEl.disabled = isLocal;
+  apiKeyEl.placeholder = isLocal ? "本地模式通常不需要 API Key" : "Google AI Studio API Key（僅測試用）";
+}
+modelEl.addEventListener("change", updateProviderUI);
+
+// 初始化插入本地選項
+ensureLocalOptionAndField();
 
 // ===== 設定面板開關 =====
 const openSettings = () => {
@@ -176,9 +217,63 @@ function addButtons(items) {
   return box;
 }
 
-// ===== 解析並「依序」渲染模型 JSON（加上入場動畫）=====
+// ===== 本地端點 Chat Adapter（支援兩種常見協定） =====
+function makeLocalChatAdapter(baseUrl, systemInstruction) {
+  const msgs = []; // {role, content}
+  function toResponseText(text) {
+    return { response: { text: async () => text } };
+  }
+  async function callOpenAICompat(userText) {
+    // OpenAI/LM Studio/Oobabooga 兼容：/v1/chat/completions
+    const body = {
+      model: "local",
+      messages: [
+        ...(systemInstruction ? [{ role: "system", content: systemInstruction }] : []),
+        ...msgs,
+        { role: "user", content: userText }
+      ],
+      stream: false,
+      temperature: 0.7
+    };
+    const r = await fetch(baseUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json().catch(() => null);
+    const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (typeof content !== "string") {
+      // 若回傳非預期，退而取原始文本
+      const raw = await r.text();
+      return toResponseText(raw);
+    }
+    return toResponseText(content);
+  }
+  async function callGeneric(userText) {
+    // 泛型：自定義 /api/chat，回傳純文字（即模型 JSON 字串）
+    const body = { system: systemInstruction || "", prompt: userText, history: msgs };
+    const r = await fetch(baseUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text = await r.text();
+    return toResponseText(text);
+  }
+  return {
+    async sendMessage(text) {
+      msgs.push({ role: "user", content: text });
+      const useOpenAI = /\/v1\/chat\/completions/i.test(baseUrl);
+      const out = await (useOpenAI ? callOpenAICompat(text) : callGeneric(text));
+      return out;
+    }
+  };
+}
+
+// ===== 解析並「依序」渲染模型 JSON（加上入場動畫） =====
 async function renderAssistantJSON(resp) {
-  // 每輪渲染開始前重置圖示旗標 & 確保動畫樣式存在
   resetBotIconOnce();
   ensureAnimStyles();
 
@@ -233,16 +328,13 @@ async function renderAssistantJSON(resp) {
     tasks.push(() => addBotTextBubble(html));
   }
 
-  // 順序播放：每個區塊依序出現＋動畫
   for (const task of tasks) {
     const el = task();
     if (el && el.classList) {
-      // 下一輪渲染前，確保滾到底
       chatEl.scrollTop = chatEl.scrollHeight;
-      // 動畫 class（用 rAF 避免佈局合併問題）
       requestAnimationFrame(() => el.classList.add("bubble-anim"));
     }
-    await sleep(140); // 間隔可調（ms）
+    await sleep(140);
   }
 }
 
@@ -250,16 +342,29 @@ async function renderAssistantJSON(resp) {
 startBtn.addEventListener("click", async () => {
   try {
     const key = apiKeyEl.value.trim();
+    const sys = systemPromptTextarea.value.trim() || DEFAULT_SYSTEM_PROMPT;
+    const isLocal = modelEl.value === LOCAL_MODEL_VALUE;
+
+    if (isLocal) {
+      const url = (localUrlInput && localUrlInput.value.trim()) || "";
+      if (!url) { alert("請輸入本地模型 URL"); return; }
+      genAI = null; model = null;
+      chat = makeLocalChatAdapter(url, sys);
+      setStatus("已連線（本地）", true);
+      closeSettingsPanel();
+      return;
+    }
+
     if (!key) { alert("請先貼上 API Key"); return; }
     const gen = new GoogleGenerativeAI(key);
     const mdl = gen.getGenerativeModel({
       model: modelEl.value,
-      systemInstruction: systemPromptTextarea.value.trim() || DEFAULT_SYSTEM_PROMPT,
+      systemInstruction: sys,
       generationConfig: { responseMimeType: "application/json" }
     });
     genAI = gen; model = mdl;
     chat = model.startChat({ history, generationConfig: { responseMimeType: "application/json" } });
-    setStatus("已連線", true);
+    setStatus("已連線（Gemini）", true);
     closeSettingsPanel();
   } catch (e) {
     console.error(e);
@@ -281,7 +386,7 @@ async function sendMessage() {
       return;
     }
     const resp = await chat.sendMessage(text);
-    const out = await resp.response.text(); // 期望 JSON
+    const out = await resp.response.text(); // 期望 JSON（本地或雲端皆需回傳 JSON 字串）
     let json;
     try { json = JSON.parse(out); }
     catch {
@@ -292,14 +397,14 @@ async function sendMessage() {
       requestAnimationFrame(() => el2.classList.add("bubble-anim"));
       return;
     }
-    if (!json || typeof json !== "object" || !("answer" in json)) {
-      resetBotIconOnce();
-      const el1 = addBotTextBubble('Schema 檢查未通過（缺少 "answer"）。原始內容：');
-      requestAnimationFrame(() => el1.classList.add("bubble-anim"));
-      const el2 = addBotTextBubble(`<pre class=\"code-block\">${escapeHTML(JSON.stringify(json, null, 2))}</pre>`);
-      requestAnimationFrame(() => el2.classList.add("bubble-anim"));
-      return;
-    }
+    // if (!json || typeof json !== "object" || !("answer" in json)) {
+    //   resetBotIconOnce();
+    //   const el1 = addBotTextBubble('Schema 檢查未通過（缺少 "answer"）。原始內容：');
+    //   requestAnimationFrame(() => el1.classList.add("bubble-anim"));
+    //   const el2 = addBotTextBubble(`<pre class=\"code-block\">${escapeHTML(JSON.stringify(json, null, 2))}</pre>`);
+    //   requestAnimationFrame(() => el2.classList.add("bubble-anim"));
+    //   return;
+    // }
     await renderAssistantJSON(json);
   } catch (e) {
     resetBotIconOnce();
