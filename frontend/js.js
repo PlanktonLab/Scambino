@@ -1,13 +1,7 @@
-// scambino.js － 純前端版（僅 JS）
-// 需求：頁面需已存在以下元素與圖片：
-// #chat #sendBtn #clearBtn #userInput
-// #settingsBtn #settingsModal #modalBackdrop #closeSettings
-// #apiKey #model #startBtn #status #systemPrompt
-// 並備妥 img/user.png、img/bot.png、img/step.png
+
 
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-// 以 fetch 載入 prompt.txt（與 HTML 同資料夾）
 let DEFAULT_SYSTEM_PROMPT = "";
 try {
   const res = await fetch("prompt.txt", { cache: "no-store" });
@@ -101,7 +95,7 @@ function updateProviderUI() {
   if (wrap) wrap.style.display = isLocal ? "block" : "none";
   // 本地模式通常不需要 API Key
   apiKeyEl.disabled = isLocal;
-  apiKeyEl.placeholder = isLocal ? "本地模式通常不需要 API Key" : "Google AI Studio API Key（僅測試用）";
+  apiKeyEl.placeholder = isLocal ? "不需要 API Key" : "Google AI Studio API Key（僅測試用）";
 }
 modelEl.addEventListener("change", updateProviderUI);
 
