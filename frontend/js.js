@@ -93,7 +93,6 @@ function updateProviderUI() {
   const isLocal = modelEl.value === LOCAL_MODEL_VALUE;
   const wrap = document.getElementById("localUrlWrap");
   if (wrap) wrap.style.display = isLocal ? "block" : "none";
-  // 本地模式通常不需要 API Key
   apiKeyEl.disabled = isLocal;
   apiKeyEl.placeholder = isLocal ? "不需要 API Key" : "Google AI Studio API Key（僅測試用）";
 }
